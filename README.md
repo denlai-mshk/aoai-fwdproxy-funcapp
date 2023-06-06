@@ -65,7 +65,6 @@ To comply with the [Azure OpenAI Code of Conduct and Terms of Use](https://learn
 2. After Function App is created, Left blade > Configuration > Add Applilcation Settings > **Save**
 ```javascript    
     AOAI_HOSTNAME = {your AOAI resource domain}.openai.azure.com
-    AOAI_URIPATH = /openai/deployments/
     AOAI_INAPIKEY = {your internal apiKey for authenticated user}
     AOAI_OUTAPIKEY = {actual AOAI apikey}
 ```
@@ -73,7 +72,7 @@ To comply with the [Azure OpenAI Code of Conduct and Terms of Use](https://learn
 
 3. Left blade > Health check > add path > **Save**
 ```javascript  
-/api/FwdProxy/health/check
+/api/FwdProxy/openai/deployments/health/check
 ```
 ![funchealth](https://github.com/denlai-mshk/aoai-fwdproxy-funcapp-private/blob/main/screenshots/funchealth.png)
 
@@ -93,9 +92,10 @@ git clone https://github.com/denlai-mshk/aoai-fwdproxy-funcapp.git
 ## Application Gateway Configuration
 1. [Create AppGW by Portal](https://learn.microsoft.com/en-us/azure/application-gateway/quick-create-portal)
 2. [Backend pool and Backend setting](https://learn.microsoft.com/en-us/azure/application-gateway/create-ssl-portal)
-3. You have to create 1 Rule bind with 1 Listener, 1 Backend pool and 1 Backend setting, the backend setting bind with 1 Health probe
+3. You have to create 1 Routing rule bind with 1 Listener, 1 Backend pool and 1 Backend setting, the backend setting bind with 1 Health probe
 4. Add multiple Function Apps into Backend pool 
-5. AppGW inbound and outbound are 443 port for TLS/SSL
+5. Add 1 rewrite ruleset (chatcompletion_100/otherapi_101/healthcheck_102) bind with Routing rule
+6. AppGW inbound and outbound are 443 port for TLS/SSL
 
 ![backendpool](https://github.com/denlai-mshk/aoai-fwdproxy-funcapp-private/blob/main/screenshots/backendpool.png)
 
@@ -107,6 +107,64 @@ git clone https://github.com/denlai-mshk/aoai-fwdproxy-funcapp.git
 
 ![Listener](https://github.com/denlai-mshk/aoai-fwdproxy-funcapp-private/blob/main/screenshots/listener.png)
 
+![rewrite000](https://github.com/denlai-mshk/aoai-fwdproxy-funcapp-private/blob/main/screenshots/rewrite000.png)
+
+![rewrite100](https://github.com/denlai-mshk/aoai-fwdproxy-funcapp-private/blob/main/screenshots/rewrite100.png)
+
+![rewrite101](https://github.com/denlai-mshk/aoai-fwdproxy-funcapp-private/blob/main/screenshots/rewrite101.png)
+
+![rewrite102](https://github.com/denlai-mshk/aoai-fwdproxy-funcapp-private/blob/main/screenshots/rewrite102.png)
+
+- **chatcompletion(100)**
+  ```javascript  
+  if (server variable = uri_path) 
+  equal
+  /openai/deployments/(.*)/chat/completions
+
+  and if (server variable = request_query) 
+  equal
+  api-version=(.*)
+
+  then
+  rewrite type = URL
+  action type = Set
+  Components = Both URL path and URL query string
+  URL path value = /api/FwdProxy/openai/deployments/{var_uri_path_1}/chatcompletions
+  URL query string value = api-version={var_request_query_1}
+  ```
+- **otherapi(101)**
+  ```javascript  
+  if (server variable = uri_path) 
+  equal
+  /openai/deployments/(.*)
+
+  and if (server variable = request_query) 
+  equal
+  api-version=(.*)
+
+  then
+  rewrite type = URL
+  action type = Set
+  Components = Both URL path and URL query string
+  URL path value = /api/FwdProxy/openai/deployments/{var_uri_path_1}
+  URL query string value = api-version={var_request_query_1}
+  ```
+- **healthcheck(102)**
+  ```javascript  
+  if (server variable = uri_path) 
+  equal
+  /openai/deployments/health/check
+
+  and if (server variable = request_query) 
+  equal
+  api-version=(.*)
+
+  then
+  rewrite type = URL
+  action type = Set
+  Components = URL path
+  URL path value = /api/FwdProxy/openai/deployments/health/check
+  ```
 ## How to test with PostMan
 Well-known API tester Postman released OpenAI API profile for free. Get that [over here](https://www.postman.com/devrel/workspace/openai/documentation/13183464-90abb798-cb85-43cb-ba3a-ae7941e968da)
 

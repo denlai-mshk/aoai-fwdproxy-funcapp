@@ -9,7 +9,13 @@
         "get",
         "post"
       ],
-      "route": "FwdProxy/{modelname}/{apiname?}"
+      "route": "FwdProxy/{openai}/{deployments}/{modelname}/{apiname?}",
+      "queryParams": {  
+        "api-version": {  
+          "type": "string",  
+          "required": false
+        }  
+      }       
     },
     {
       "type": "http",

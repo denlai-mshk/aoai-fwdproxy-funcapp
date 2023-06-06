@@ -1,7 +1,6 @@
 require('dotenv').config();  
 const https = require('https');
 const newhostname = process.env.AOAI_HOSTNAME;
-const uriPath = process.env.AOAI_URIPATH;
 const apiKey = process.env.AOAI_OUTAPIKEY;
 const inapiKey = process.env.AOAI_INAPIKEY;
   
@@ -9,6 +8,8 @@ module.exports = async function (context, req) {
   return new Promise((resolve, reject) => {      
     try{
       const modelname = context.bindingData.modelname;
+      const openai = context.bindingData.openai;
+      const deployments = context.bindingData.deployments;
       var apiname = context.bindingData.apiname;
       if (req.method === 'POST') {
         if (req.headers['api-key'] != inapiKey){
@@ -16,10 +17,11 @@ module.exports = async function (context, req) {
         }
         const bodyinput = (req.body && req.body.input);
         const userid = (req.body && req.body.user);
-        const apiversion = (req.query.apiversion);
+        const apiversion = (req.query['api-version']);
         if (apiname === 'chatcompletions') //GPT3.5_4 URI has one additional /chat/ for dialog bases
           apiname = 'chat/completions';
-        const newPath = uriPath + modelname + '/' + apiname + '?' + 'api-version=' + apiversion;
+        
+        const newPath =  '/' + openai + '/' + deployments + '/' + modelname + '/' + apiname + '?' + 'api-version=' + apiversion;
         const postData = JSON.stringify(req.body);
         const options = {  
             hostname: newhostname,  
