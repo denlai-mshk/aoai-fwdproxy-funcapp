@@ -1,14 +1,17 @@
 
-# Boost up 12x Request per minute for your AOAI Resources
+# Boost up 4x Request per minute for your AOAI Resources
 ![concept1](https://github.com/denlai-mshk/aoai-fwdproxy-funcapp/blob/main/screenshots/concept1.png)
 
 ## Fully utilize AOAI quotas and limits
-As at June 2023, **one subscription** can provision **three AOAI resources per region**. Currently, there are four regional Cognitive services that support Azure OpenAI -*EastUS, South Cental US, West Europe and France Central* which allows for a **maximium 12 instances** of the same AOAI model can be provisoned across these four regions. This means you can achieve up to *(300x12/60)* = **maximium 60 request per second** for your ChatGPT model. If this is still not enough to meet your production workload requirements, you can consider getting additional subscriptions to create an AOAI resources RAID.
+As at 12 June 2023, **one subscription** can provision **30 AOAI resources per region**, sharing the same TPM and RPM limits. For example, you can allocate 3 deployment instances of GPT-35-Turbo with 80K TPM/480 RPM each to utilize the whole TPM/RPM limits for one region.
 
 ![limit](https://github.com/denlai-mshk/aoai-fwdproxy-funcapp/blob/main/screenshots/limit.png)
+![limit](https://github.com/denlai-mshk/aoai-fwdproxy-funcapp/blob/main/screenshots/newlimit.png)
+
+Currently, there are four regional Cognitive services that support Azure OpenAI -*EastUS, South Cental US, West Europe and France Central* which allows for a **maximium 120 instances** of the same AOAI model can be provisoned across these four regions. This means you can achieve up to *(1440x4/60)* = **maximium 96 request per second** for your ChatGPT model. If this is still not enough to meet your production workload requirements, you can consider getting additional subscriptions to create an AOAI resources RAID.
 
 ## Why not just raise your quotas and limits?
-You can certainly apply for quota increase requests by filling out forms, but this may not be the most practical solution as it won't give you access to the additional resources right away. Furthermore, what happens if your AOAI service demand continues to grow? Utilizing your existing quotas is the more practical solution to tackle your AOAI resource bottleneck. Remember that the **actual quotas and limits** you got is maximium 12 model instances for 1 subscription. If you have concerns on cross-region networking cost, just provison three AOAI resource instances in your favorite region with **three** same model instances, that is better than only **one**, make sense?
+You can apply for quota increase requests by filling out forms, but this may not be the most practical solution as it won't give you access to the additional resources right away. What if your AOAI service demand continues to grow? Utilizing your existing quotas is the more practical solution. Remember, you have a maximum of 120 model instances across 4 regions with 4 times quotas and limits for 1 subscription. If you don't have concerns about cross-region networking cost, spanning across regions is the fastest way to get your production rollout up and running.
 
 ## Load balancing multiple AOAI Resources 
 ![concept3](https://github.com/denlai-mshk/aoai-fwdproxy-funcapp/blob/main/screenshots/concept3.png)
