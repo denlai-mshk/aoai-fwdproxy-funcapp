@@ -18,8 +18,12 @@ module.exports = async function (context, req) {
         const bodyinput = (req.body && req.body.input);
         const userid = (req.body && req.body.user);
         const apiversion = (req.query['api-version']);
-        if (apiname === 'chatcompletions') //GPT3.5_4 URI has one additional /chat/ for dialog bases
+        //this URI path is rewrite by AppGW
+        if (apiname === 'extensionschatcompletions'){//https://learn.microsoft.com/en-us/azure/cognitive-services/openai/reference#completions-extensions
+          apiname = 'extensions/chat/completions';
+        }else if (apiname === 'chatcompletions'){} //GPT3.5_4 URI has one additional /chat/ for dialog bases
           apiname = 'chat/completions';
+        }
         
         const newPath =  '/' + openai + '/' + deployments + '/' + modelname + '/' + apiname + '?' + 'api-version=' + apiversion;
         const postData = JSON.stringify(req.body);

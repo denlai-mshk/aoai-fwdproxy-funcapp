@@ -98,7 +98,7 @@ git clone https://github.com/denlai-mshk/aoai-fwdproxy-funcapp.git
 2. [Backend pool and Backend setting](https://learn.microsoft.com/en-us/azure/application-gateway/create-ssl-portal)
 3. You have to create 1 Routing rule bind with 1 Listener, 1 Backend pool and 1 Backend setting, the backend setting bind with 1 Health probe
 4. Add multiple Function Apps into Backend pool 
-5. Add 1 rewrite ruleset (chatcompletion_100/otherapi_101/healthcheck_102) bind with Routing rule
+5. Add 1 rewrite ruleset (extensionschatcompletion_99/chatcompletion_100/otherapi_101/healthcheck_102) bind with Routing rule
 6. AppGW inbound and outbound are 443 port for TLS/SSL
 
 ![backendpool](https://github.com/denlai-mshk/aoai-fwdproxy-funcapp/blob/main/screenshots/backendpool.png)
@@ -113,11 +113,31 @@ git clone https://github.com/denlai-mshk/aoai-fwdproxy-funcapp.git
 
 ![rewrite000](https://github.com/denlai-mshk/aoai-fwdproxy-funcapp/blob/main/screenshots/rewrite000.png)
 
+![rewrite99](https://github.com/denlai-mshk/aoai-fwdproxy-funcapp/blob/main/screenshots/rewrite99.png)
+
 ![rewrite100](https://github.com/denlai-mshk/aoai-fwdproxy-funcapp/blob/main/screenshots/rewrite100.png)
 
 ![rewrite101](https://github.com/denlai-mshk/aoai-fwdproxy-funcapp/blob/main/screenshots/rewrite101.png)
 
 ![rewrite102](https://github.com/denlai-mshk/aoai-fwdproxy-funcapp/blob/main/screenshots/rewrite102.png)
+
+- **extensionschatcompletion(99)**
+  ```javascript  
+  if (server variable = uri_path) 
+  equal
+  /openai/deployments/(.*)/extensions/chat/completions
+
+  and if (server variable = request_query) 
+  equal
+  api-version=(.*)
+
+  then
+  rewrite type = URL
+  action type = Set
+  Components = Both URL path and URL query string
+  URL path value = /api/FwdProxy/openai/deployments/{var_uri_path_1}/extensionschatcompletions
+  URL query string value = api-version={var_request_query_1}
+  ```
 
 - **chatcompletion(100)**
   ```javascript  
