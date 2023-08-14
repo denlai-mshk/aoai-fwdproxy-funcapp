@@ -9,7 +9,10 @@ As at 12 June 2023, **one subscription** can provision **30 AOAI resources per r
 
 ![limit2](https://github.com/denlai-mshk/aoai-fwdproxy-funcapp/blob/main/screenshots/newlimit.png)
 
-Currently, there are four regional Cognitive services that support Azure OpenAI -*EastUS, South Cental US, West Europe and France Central* which allows for a **maximium 120 instances** of the same AOAI model can be provisoned across these four regions. This means you can achieve up to *(1440x4/60)* = **maximium 96 request per second** for your ChatGPT model. If this is still not enough to meet your production workload requirements, you can consider getting additional subscriptions to create an AOAI resources RAID.
+As at June 2023, there are four regional Cognitive services that support Azure OpenAI -*EastUS, South Cental US, West Europe and France Central* which allows for a **maximium 120 instances** of the same AOAI model can be provisoned across these four regions. This means you can achieve up to *(1440x4/60)* = **maximium 96 request per second** for your ChatGPT model per subscription. If this is still not enough to meet your production workload requirements, you can consider getting additional subscriptions to create an AOAI resources RAID.
+
+*The per region throttle limit being set is 24 RPS. However, the actual RPS is determined by the number of tokens being sent by your API. **For instance, if the request body of the chatcompletion API call contains 3000 tokens, with 1000 tokens reserved for the response (MaxToken), the RPS for this scenario would be 1**. This means that any additional API calls sent to the AOAI endpoint within the same concurrent second will be throttled and receive a HTTP 429 response code.
+
 
 ## Why not just raise your quotas and limits?
 You can apply for quota increase requests by filling out forms, but this may not be the most practical solution as it won't give you access to the additional resources right away. What if your AOAI service demand continues to grow? Utilizing your existing quotas is the more practical solution. Remember, you have a maximum of 120 model instances across 4 regions with 4 times quotas and limits for 1 subscription. If you don't have concerns about cross-region networking cost, spanning across regions is the fastest way to get your production rollout up and running.
