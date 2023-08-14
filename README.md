@@ -220,10 +220,11 @@ Lastly, when deploying this advanced health checking capability, it is important
 ## Go for Production To-Do List
 ![refarch](https://github.com/denlai-mshk/aoai-fwdproxy-funcapp/blob/main/screenshots/refarch.png)
 
+- It is highly recommended to adopt the Hub-Spoke best practices in order to centralize all AOAI resources within the hub subscription. This approach provides several benefits, including centralized Responsible AI governance and enhanced usage control such as user quotas. By centralizing the AOAI resources, you can effectively manage and monitor the AI capabilities in a more streamlined and controlled manner. This ensures that responsible AI practices are implemented consistently across the organization and allows for better control over resource allocation and usage.Responsible AI governance as well as usage control like user quotas. 
 - Consider provisioning the Function App in VNET Injection mode for security. 
 - Connect the AppGW and Function App within the same VNET. 
 - Add a private endpoint to the AOAI Resources in your VNET.
-- Instead of using the AppGW public IP for the endpoint, consider installing a public CA certificate with domain name service.
-- Secure the AOAI endpoint and API key in the Azure Key Vault.
+- If public access is required for the AppGW, it is recommended to install a public CA certificate with domain name service. This ensures secure communication between the client and the AppGW. On the other hand, if public access is not necessary, it is advisable to bind the listener with the private IP of the AppGW. This configuration enforces that all incoming traffic is transmitted within the private VNET, enhancing the security and privacy of the network communication.
+- Secure the AOAI endpoint and API key in the Azure Key Vault or use AAD RBAC instead.
 - Consider provisioning the CosmosDB for abuse auditing.
 - Consider provisioning the [Azure AI Content Safety](https://learn.microsoft.com/en-us/azure/cognitive-services/content-safety/overview) for content filtering and detection.
