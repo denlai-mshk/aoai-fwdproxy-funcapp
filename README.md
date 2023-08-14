@@ -96,7 +96,7 @@ git clone https://github.com/denlai-mshk/aoai-fwdproxy-funcapp.git
 ## Application Gateway Configuration
 1. [Create AppGW by Portal](https://learn.microsoft.com/en-us/azure/application-gateway/quick-create-portal)
 2. [Backend pool and Backend setting](https://learn.microsoft.com/en-us/azure/application-gateway/create-ssl-portal)
-3. You have to create 1 Routing rule bind with 1 Listener, 1 Backend pool and 1 Backend setting, the backend setting bind with 1 Health probe
+3. You have to create 1 Routing rule bind with 1 Listener, 1 Backend pool and 1 Backend setting, the backend setting bind with 1 Health probe. (**Pay attention to the 600 seconds timeout setting, because the OpenAI model latency is subject to your inputs, models, model parameters and API types**)
 4. Add multiple Function Apps into Backend pool 
 5. Add 1 rewrite ruleset (extensionschatcompletion_99/chatcompletion_100/otherapi_101/healthcheck_102) bind with Routing rule
 6. AppGW inbound and outbound are 443 port for TLS/SSL
@@ -197,6 +197,21 @@ Well-known API tester Postman released OpenAI API profile for free. Get that [ov
 In postman, pass your internal apikey in auth header
 
 ![postmansend](https://github.com/denlai-mshk/aoai-fwdproxy-funcapp/blob/main/screenshots/postmansend.png)
+
+## Advanced Health Checking
+Based on observations and customer feedback, it has been noticed that your API may occasionally respond with HTTP 5xx errors. These errors are typically caused by the AOAI endpoints being overwhelmed due to high traffic. To address this issue, we can implement a more intelligent health check logic. This logic will enable your AppGW to automatically and temporarily remove any AOAI endpoint from the backend pool if it receives a 5xx response during the health check. During the next health check cycle, if the endpoint responds with a 200 status, AppGW will add it back to the backend pool. This approach ensures that only healthy endpoints are utilized by your application.
+
+To implement the Advanced Health Checking capability, you can easily update the **path** in your custom health probe as follows:
+ ```javascript
+/api/FwdProxy/openai/deployments/{your_deployed_model_name}/aoaihealthcheck?api-version=2023-05-15
+ ```
+and modify the **HTTP response status code match = 200-499**
+
+The **/aoaihealthcheck** URI path will generate a chatcompletion API request with a dummy prompt to your AOAI endpoints. This is specifically designed for testing the actual model latency. It is important to configure the **Interval** setting of this custom health probe to be triggered periodically in order to align with your budget plan.
+
+By leveraging the **Timeout** capability of the custom health probe, you have the ability to enforce a specific latency requirement for AOAI endpoints. For example, you can set the timeout setting to 30 seconds, allowing the AppGW to automatically remove any AOAI endpoints that exceed this response time. This ensures that only endpoints meeting your desired latency criteria are utilized.
+
+Lastly, when deploying this advanced health checking capability, it is important to note that the periodic API calls also contribute to the 240k TPS (Transactions Per Second) limit imposed on your AOAI endpoint per region per subscription. Therefore, it is advised to adjust the size of the dummy prompt context wisely in order to facilitate the health check purpose. For example, a simple prompt like "hi, I am healthcheck" can be used in the source code. This ensures that the health checks do not consume excessive resources and remain within the specified TPS limit.
 
 ## Go for Production To-Do List
 ![refarch](https://github.com/denlai-mshk/aoai-fwdproxy-funcapp/blob/main/screenshots/refarch.png)
