@@ -2,15 +2,18 @@ require('dotenv').config();
 const https = require('https');
 const newhostname = process.env.AOAI_HOSTNAME;
 const apiKey = process.env.AOAI_OUTAPIKEY;
+var modelname = process.env.AOAI_MODELNAME;
+var healthcheckPrompt = process.env.AOAI_HEALTHCHECK_PROMPT;
 
-  
-module.exports = async function (context, req) {  
-  return new Promise((resolve, reject) => {      
+module.exports = async function (context, req) {
+  return new Promise((resolve, reject) => { 
     try{
-      const modelname = context.bindingData.modelname;
       const openai = context.bindingData.openai;
       const deployments = context.bindingData.deployments;
       const apiversion = (req.query['api-version']);
+
+      modelname = modelname || context.bindingData.modelname;
+      healthcheckPrompt = healthcheckPrompt || 'hi, I am healthcheck'
 
       context.log('aoai_healthcheck');  
       const newPath =  '/' + openai + '/' + deployments + '/' + modelname + '/chat/completions?api-version=' + apiversion;        
@@ -20,13 +23,13 @@ module.exports = async function (context, req) {
         messages: [
           {
             role: 'user',
-            content: 'hi, I am healthcheck'
+            content: healthcheckPrompt
           }
         ],
         temperature: 0.5,
         top_p: 0.5,
         max_tokens: 300,
-    
+
       };
       const postData = JSON.stringify(healthcheckbody);
       context.log('newPath = ' + newPath);
