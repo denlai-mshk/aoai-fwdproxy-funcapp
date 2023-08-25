@@ -20,7 +20,7 @@ module.exports = async function (context, req) {
     await handleAOAIHealthCheck(context, req); 
 
   } else {
-    context.log('Uncategorized request: ' + req);  
+    context.log('Uncategorized request: ' + JSON.stringify(req));  
     context.res = { status: 404 ,body: 'Resource Not Found'  }; 
   }
 };
