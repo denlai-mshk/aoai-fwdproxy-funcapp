@@ -29,7 +29,6 @@ module.exports = async function (context, req) {
         temperature: 0.5,
         top_p: 0.5,
         max_tokens: 300,
-
       };
       const postData = JSON.stringify(healthcheckbody);
       context.log('newPath = ' + newPath);
@@ -61,6 +60,7 @@ module.exports = async function (context, req) {
                 status: res2.statusCode 
             };  
             context.res = response;  
+            context.log("aoai healthcheck response: " + data)
             resolve();  
         });  
       }); 
@@ -87,8 +87,7 @@ module.exports = async function (context, req) {
       });  
 
       req2.write(postData);  
-      req2.end();         
-
+      req2.end();
         
     }catch(err){
       console.log(err);
