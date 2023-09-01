@@ -4,17 +4,16 @@ const newhostname = process.env.AOAI_HOSTNAME;
 const apiKey = process.env.AOAI_OUTAPIKEY;
 const inapiKey = process.env.AOAI_INAPIKEY;
 
-var modelname = process.env.AOAI_MODELNAME;
   
 module.exports = async function (context, req) {  
   return new Promise((resolve, reject) => {      
     try{
+      const modelname = context.bindingData.modelname;
       const openai = context.bindingData.openai;
       const deployments = context.bindingData.deployments;
       const apiversion = (req.query['api-version']);
       var apiname = context.bindingData.apiname;
-      modelname = modelname || context.bindingData.modelname;
-
+      
     context.log('post message');  
     if (req.headers['api-key'] != inapiKey){
         throw new Error('Invalid apikey');

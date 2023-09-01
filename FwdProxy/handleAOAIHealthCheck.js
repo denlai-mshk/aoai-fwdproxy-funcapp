@@ -2,12 +2,12 @@ require('dotenv').config();
 const https = require('https');
 const newhostname = process.env.AOAI_HOSTNAME;
 const apiKey = process.env.AOAI_OUTAPIKEY;
-var modelname = process.env.AOAI_MODELNAME;
 var healthcheckPrompt = process.env.AOAI_HEALTHCHECK_PROMPT;
 
 module.exports = async function (context, req) {
   return new Promise((resolve, reject) => { 
     try{
+      const modelname = context.bindingData.modelname;
       const openai = context.bindingData.openai;
       const deployments = context.bindingData.deployments;
       const apiversion = (req.query['api-version']);
