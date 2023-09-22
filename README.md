@@ -217,7 +217,7 @@ The **/aoaihealthcheck** URI path will generate a chatcompletion API request wit
 
 By leveraging the **Timeout** capability of the custom health probe, you have the ability to enforce a specific latency requirement for AOAI endpoints. For example, you can set the timeout setting to 30 seconds, allowing the AppGW to automatically remove any AOAI endpoints that exceed this response time. This ensures that only endpoints meeting your desired latency criteria are utilized.
 
-Lastly, when deploying this advanced health checking capability, it is important to note that the periodic API calls also contribute to the 240k TPS (Transactions Per Second) limit imposed on your AOAI endpoint per region per subscription. Therefore, it is advised to adjust the size of the dummy prompt context wisely in order to facilitate the health check purpose. For example, a simple prompt like "hi, I am healthcheck" can be used in the source code. This ensures that the health checks do not consume excessive resources and remain within the specified TPS limit.
+Lastly, when deploying this advanced health checking capability, it is important to note that the periodic API calls also contribute to the 240k TPM (Token per minute) limit imposed on your AOAI endpoint per region per subscription. Therefore, it is advised to adjust the size of the dummy prompt context wisely in order to facilitate the health check purpose. For example, a simple prompt like "hi, I am healthcheck" can be used in the source code. This ensures that the health checks do not consume excessive resources and remain within the specified TPM limit.
 
 
 ## Go for Production To-Do List
